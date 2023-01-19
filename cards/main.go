@@ -10,5 +10,12 @@ func main() {
 	card := "Ace OF Spades"
 	card = "override card"
 
+	newCard := newCard()
+
 	fmt.Println(card)
+	fmt.Println(newCard)
+}
+
+func newCard() string {
+	return "Hearts Of Love"
 }
