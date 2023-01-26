@@ -5,9 +5,22 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+)
 
 type deck []string
+
+// reciever function
+// print works as a function for type deck
+func (d deck) print() {
+	for i, value := range d {
+		fmt.Println(i, value)
+	}
+}
 
 func newDeck() deck {
 	cards := deck{}
@@ -24,10 +37,24 @@ func newDeck() deck {
 	return cards
 }
 
-// reciever function
-// print works as a function for type deck
-func (d deck) print() {
-	for i, value := range d {
-		fmt.Println(i, value)
+func deal(cards deck, handSize int) (deck, deck) {
+	return cards[:handSize], cards[handSize:]
+}
+
+func (d deck) toString() string {
+	return strings.Join([]string(d), ",")
+}
+
+func writeToFile(d deck, fileName string) error {
+	return ioutil.WriteFile(fileName, []byte(d.toString()), 0666)
+}
+
+func readFromFile(fileName string) deck {
+	content, err := ioutil.ReadFile(fileName)
+
+	if err != nil {
+		fmt.Println("Error Read From File:", err)
+		os.Exit(1)
 	}
+	return strings.Split(string(content), ",")
 }
