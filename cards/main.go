@@ -14,4 +14,9 @@ func main() {
 	writeToFile(cards, "firstWrite")
 	content := readFromFile("firstWrite")
 	content.print()
+
+	cards.shuffleCards().print()
+
+	// assignment
+	evenOrOdd([]int{1, 2, 3, 4, 5})
 }
