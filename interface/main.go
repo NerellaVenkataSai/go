@@ -9,7 +9,12 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
 
 type englishBot struct{}
 type spanishBot struct{}
@@ -17,6 +22,8 @@ type spanishBot struct{}
 type bot interface {
 	getGrettings() string
 }
+
+type customWriter struct{}
 
 func main() {
 	eb := englishBot{}
@@ -26,6 +33,9 @@ func main() {
 	// It's accepting because those types became part of interface by implementing definitions in interface
 	printGreeting(eb)
 	printGreeting(sb)
+
+	//http read oand write interface
+	fetchApi()
 }
 
 // here we are using same function for different types using interface
@@ -41,4 +51,40 @@ func (englishBot) getGrettings() string {
 // as spanishBot type implements interface, spanishBot type is considered as bot type --- implicit concept
 func (spanishBot) getGrettings() string {
 	return "hello spanish"
+}
+
+func fetchApi() {
+	cw := customWriter{}
+	resp, err := http.Get("http://google.com")
+
+	if err != nil {
+		fmt.Println("error while fetching")
+		os.Exit(1)
+	}
+
+	// using read interface in resp
+	/*
+		Read interface is expecting byte slice as param as it reference type it's updating it
+		so we are using it in next line 66 to print the repsonse body
+	*/
+	bod := make([]byte, 9999)
+	resp.Body.Read(bod)
+	// fmt.Println(string(bod))
+
+	// standard way to print res
+	fmt.Println("------------------------------------------")
+	// io.Copy(os.Stdout, resp.Body)
+
+	// custom writer interface using in copy
+	io.Copy(cw, resp.Body)
+}
+
+// Write reciever function is implementing same Write interface
+// so customWriter struct became part of Write interface
+
+func (customWriter) Write(bs []byte) (n int, err error) {
+
+	fmt.Println("custome write", string(bs))
+
+	return len(bs), nil
 }
